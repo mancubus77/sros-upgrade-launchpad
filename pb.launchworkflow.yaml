@@ -1,0 +1,60 @@
+---
+- name: Run AAP Workflow
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Launch a job
+      awx.awx.workflow_launch:
+        controller_host: https://aapaap-rhacs-operator.apps.sno-3-25.lab.apac-telco.net
+        validate_certs: false
+        controller_username: admin
+        controller_password: admin
+        workflow_template: upgrade-workflow
+        wait: true
+        extra_vars:
+          hosts_to_run: sites
+      register: job
+
+# ---
+# - name: Playbook to configure ansible controller post installation
+#   hosts: localhost
+#   connection: local
+#   collections:
+#     infra.aap_configuration
+#   vars:
+#     aap_hostname: https://aapaap-rhacs-operator.apps.sno-3-25.lab.apac-telco.net
+#     aap_validate_certs: false
+#     aap_username: admin
+#     aap_password: admin
+
+#   # Define following vars here, or in platform_configs/controller_auth.yml
+#   # aap_hostname: ansible-controller-web-svc-test-project.example.com
+#   # aap_username: admin
+#   # aap_password: changeme
+#   # pre_tasks:
+#   # - name: Include vars from platform_configs directory
+#   #   ansible.builtin.include_vars:
+#   #     dir: ./yaml
+#   #     ignore_files: [ controller_config.yml.template ]
+#   #     extensions: [ "yml" ]
+#   roles:
+#   - role: infra.aap_configuration.job_launch
+
+# # ---
+# # - name: Launch template 13 on AAP
+# #   hosts: localhost
+# #   connection: local
+# #   gather_facts: false
+# #   tasks:
+
+# #   - name: Include role infra.aap_configuration.job_launch
+# #     ansible.builtin.include_role:
+# #       name: aap_configuration.infra.job_launch
+# #     vars:
+# #       controller_launch_jobs:
+# #         name: upgrade-all-steps
+# #         aap_hostname: https://aapaap-rhacs-operator.apps.sno-3-25.lab.apac-telco.net
+# #         aap_validate_certs: false
+# #         aap_username: admin
+# #         aap_password: admin

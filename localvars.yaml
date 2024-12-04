@@ -1,0 +1,6 @@
+current_sw: B-21.10.R1
+target_sw:
+remote_url: http://172.23.3.24:8080/NOKIA7750.SW
+fw_filename: NOKIA7750.SW
+target_dir: newsw
+hosts_to_run: sites

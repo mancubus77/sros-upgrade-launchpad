@@ -1,0 +1,16 @@
+---
+- name: Info message
+  ansible.builtin.debug:
+    msg: "Running upgrade for site {{ item }}"
+
+- name: Launch a job for {{ item }}
+  awx.awx.job_launch:
+    controller_host: https://aapaap-rhacs-operator.apps.sno-3-25.lab.apac-telco.net
+    validate_certs: false
+    controller_username: admin
+    controller_password: admin
+    job_template: upgrade-all-steps
+    wait: true
+    extra_vars:
+      hosts_to_run: "{{ item }}"
+  register: job

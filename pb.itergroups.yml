@@ -1,0 +1,62 @@
+---
+- name: Iterrate groups in the inventory
+  hosts: sites
+  gather_facts: false
+  connection: local
+  strategy: linear
+
+  tasks:
+    - name: Run block
+      run_once: true
+      delegate_to: localost
+      block:
+        - name: Iterrate over play hosts groups {{ groups.keys() }}
+          ansible.builtin.set_fact:
+            user_groups: "{{ groups | unique | difference(['sites', 'all', 'ungrouped']) }}"
+
+        - name: Print groups
+          ansible.builtin.debug:
+            msg: "{{ user_groups }}"
+
+        - name: Run template for group
+          ansible.builtin.include_tasks: "tasks/launch_job.yaml"
+          with_items: "{{ user_groups }}"
+          when: job is defined
+
+        - name: Run Workflow for group
+          ansible.builtin.include_tasks: "tasks/launch_workflow.yaml"
+          with_items: "{{ user_groups }}"
+          when: workflow is defined
+
+
+      ## Another Method
+      # - name: Show ansible_inventory_sources
+      #   ansible.builtin.debug:
+      #     var: ansible_inventory_sources
+
+      # - name: Run inventory list
+      #   ansible.builtin.command:
+      #     cmd: ansible-inventory -i {{ ansible_inventory_sources[0] }} --list
+      #   changed_when: false
+      #   register: __result
+
+      # - name: Show sites
+      #   ansible.builtin.debug:
+      #     msg: "{{ (__result.stdout | from_json).sites.children }}"
+
+      ## And another Method
+      # - name: Set empty array
+      #   ansible.builtin.set_fact:
+      #     site_groups: []
+
+      # - name: Iterate all hosts, within target group and get sub groups list
+      #   run_once: true
+      #   ansible.builtin.set_fact:
+      #     site_groups: "{{ site_groups + hostvars[item].group_names }}"
+      #   loop: "{{ groups['sites'] }}"
+
+      # - name: Lkkk
+      #   delegate_facts: true
+      #   run_once: true
+      #   ansible.builtin.debug:
+      #     msg: "{{ groups | unique | difference(['sites, all, ungrouped']) }}"

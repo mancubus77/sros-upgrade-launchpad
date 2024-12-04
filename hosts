@@ -1,0 +1,20 @@
+[sites:children]
+site01
+site02
+
+[site01]
+vsr01 ansible_host=172.23.3.121
+vsr02 ansible_host=172.23.3.122
+
+[site02]
+vsr03 ansible_host=172.23.3.123
+vsr04 ansible_host=172.23.3.124
+
+
+[all:vars]
+ansible_connection=network_cli
+ansible_network_os=nokia.sros.classic
+ansible_user=admin
+ansible_username=admin
+ansible_password=admin
+ansible_ssh_common_args="-oHostKeyAlgorithms=+ssh-rsa"

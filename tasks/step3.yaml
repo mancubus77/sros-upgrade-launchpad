@@ -1,0 +1,23 @@
+---
+- name: Create directory
+  ignore_errors: true
+  ansible.netcommon.cli_command:
+    command: "file md {{ target_dir }}"
+  register: cmd_output
+
+- name: Delete files in directory {{ target_dir }}
+  ansible.netcommon.cli_command:
+    command: "file delete cf3:\\{{ target_dir }}\\* force"
+  register: cmd_output
+  when: cmd_output.failed
+
+- name: Copy file from {{ remote_url }}
+  ansible.netcommon.cli_command:
+    command: "file copy {{ remote_url }}  cf3:\\{{ target_dir }}\\{{ fw_filename }}"
+  register: cmd_output
+
+- name: Valide operation was sucessfull
+  ansible.builtin.assert:
+    that: cmd_output.failed != true
+    fail_msg: |
+      File copy failed {{ cmd_output.stdout_lines }}

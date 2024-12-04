@@ -1,0 +1,16 @@
+---
+- name: SW Upgrade SROS 7750
+  hosts: "{{ hosts_to_run }}"
+  gather_facts: false
+  tasks:
+    - name: Step 1 -> Ping FAS1 and FAS2 at scheduled time to confirm reachability.
+      ansible.builtin.include_tasks: "tasks/step1.yaml"
+      tags: step1
+
+    - name: Step 2 -> Check active SW version and boot rom version on both FAS1 and FAS2
+      ansible.builtin.include_tasks: "tasks/step2.yaml"
+      tags: step2
+
+    - name: Step 3 -> Create directory structur and upload SW image 23.10.R6 files into the folder.
+      ansible.builtin.include_tasks: "tasks/step3.yaml"
+      tags: step3

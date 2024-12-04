@@ -1,0 +1,9 @@
+---
+- name: Gateher facts from devices
+  nokia.sros.device_info:
+  register: device_info
+
+- name: Display device info
+  ansible.builtin.debug:
+    msg: |
+      {{ device_info }}

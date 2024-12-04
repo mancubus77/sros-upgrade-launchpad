@@ -1,0 +1,16 @@
+---
+- name: Get SW version
+  ansible.netcommon.cli_command:
+    command: show system information
+  register: sysinfo
+
+- name: Get software version from sysinfo using regexp
+  ansible.builtin.set_fact:
+    swver: "{{ sysinfo.stdout | regex_findall(rx_sw, '\\1') | first | default([]) }}"
+  vars:
+    rx_sw: "System Version\\s+:\\s(\\S+)"
+
+- name: Validate Software version
+  ansible.builtin.assert:
+    that: swver == current_sw
+    fail_msg: "Device {{ inventory_hostname }} firmware is {{ swver }} and it doesn't match with desired {{ current_sw }}"
