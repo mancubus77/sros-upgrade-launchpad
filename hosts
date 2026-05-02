@@ -17,4 +17,5 @@ ansible_network_os=nokia.sros.classic
 ansible_user=admin
 ansible_username=admin
 ansible_password=admin
+ansible_libssh_hostkeys=ssh-rsa,ssh-dss
 ansible_ssh_common_args="-oHostKeyAlgorithms=+ssh-rsa"

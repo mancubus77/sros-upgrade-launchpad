@@ -1,0 +1,34 @@
+---
+- name: Nokia SROS - Find certificate files and check expiry
+  hosts: all
+  gather_facts: false
+  vars:
+    cert_search_roots:
+      - "cf3:\\"
+    cert_file_regex: '(?i)\b([a-z0-9][a-z0-9_.-]*\.(?:crt|cert))\b'
+  tasks:
+    - name: List directory on each root
+      ansible.netcommon.cli_command:
+        command: "file dir {{ item }}"
+      loop: "{{ cert_search_roots }}"
+      register: dir_listing
+      failed_when: false
+
+    - name: Turn dir_listing into list "files"
+      ansible.builtin.set_fact:
+        files: "{{ (files | default([]) + line_matches) | unique }}"
+      loop: "{{ dir_listing.results | default([]) }}"
+      vars:
+        root: "{{ item.item | regex_replace('\\\\', '/') }}"
+        line_matches: "{{ item.stdout | default('') | regex_findall(cert_file_regex) | map('regex_replace', '^', root) | list }}"
+
+    - name: Ensure "files" is always a list
+      ansible.builtin.set_fact:
+        files: "{{ files | default([]) }}"
+
+    - name: Read each file and check certificate expiry
+      ansible.builtin.include_tasks: tasks/read_one_cert.yaml
+      loop: "{{ files }}"
+      loop_control:
+        loop_var: cert_path
+      when: files | length > 0

@@ -1,3 +1,4 @@
 collections:
 - name: nokia.sros
 - name: awx.awx
+- name: community.crypto
